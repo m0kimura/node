@@ -1,18 +1,22 @@
-FROM pottava/nodejs:6.3
+FROM node:8.1-alpine
 
-RUN apk add --update --no-cache sudo bash && \
-  npm install -g forever && \
-  export uid=1000 gid=1000 && \
-  mkdir -p /home/docker && \
-  echo "docker:x:${uid}:${gid}:docker,,,:/home/docker:/bin/bash" >> /etc/passwd && \
-  echo "docker:x:${uid}:" >> /etc/group && \
-  echo "docker ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/docker && \
-  chmod 0440 /etc/sudoers.d/docker && \
-  chown ${uid}:${gid} -R /home/docker && \
-  cd /home/docker
+ARG user=${user:-docker}
+RUN apk add --update --no-cache sudo bash \
+&&  npm install -g forever express angularjs \
 
-ENV HOME=/home/docker USER=docker
-USER docker
-WORKDIR /home/docker/$PRJ/nodejs/application
-CMD node $MODULE
+&&  export uid=1000 gid=1000 \
+&&  mkdir -p /home/${user} \
+&&  echo "${user}:x:${uid}:${gid}:${user},,,:/home/${user}:/bin/bash" >> /etc/passwd \
+&&  echo "${user}:x:${uid}:" >> /etc/group \
+&&  echo "${user} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${user} \
+&&  chmod 0440 /etc/sudoers.d/${user} \
+&&  chown ${uid}:${gid} -R /home/${user}
+
+COPY starter.sh /usr/bin/starter.sh
+
+VOLUME /home/${user}
+ENV HOME=/home/${user} USER=${user}
+USER $USER
+WORKDIR $HOME
+CMD starter.sh $PRJ $OBJ $D
 
