@@ -2,7 +2,7 @@ FROM node:8.1-alpine
 
 ARG user=${user:-docker}
 RUN apk add --update --no-cache sudo bash \
-&&  npm install -g forever express angularjs \
+&&  npm install -g forever express angularjs mocha \
 
 &&  export uid=1000 gid=1000 \
 &&  mkdir -p /home/${user} \
