@@ -25,18 +25,21 @@
     esac
   done
 ##
-  if [[ $2 != "$null" ]]; then
+  echo $1, $2, $3
+  echo HUB=${hub}, FLAG=${flag}, OP=${op} 
+##
+  if [[ $2 = "$null" ]]; then
     echo *ERROR Specify the Apli Name
     exit 1
   fi
 ##
-  if  [[ ${op} = "forever" ]]; then
+  if  [[ $3 = "-d" ]]; then
     cd $HOME/${hub}/$1-project/nodejs/$2
     forever app.js --id $2
-  elif [[ ${op} = "test" ]]; then
+  elif [[ $3 = "-t" ]]; then
     cd $HOME/${hub}/$1-project/nodejs/$2
     npm test
-  elif [[ ${op} = "init" ]]; then
+  elif [[ $3 = "-i" ]]; then
     cd $HOME/${hub}/$1-project/nodejs
     mkdir $2
     cd $2
@@ -47,13 +50,14 @@
       "  \"description\": \"\",\n" \
       "  \"main\": \"app.js\",\n" \
       "  \"scripts\": {\n" \
-      "    \"test\": \"echo \"Error: no test specified\" && exit 1\"\n" \
+      "    \"test\": \"echo Error: no test specified && exit 1\"\n" \
       "  },\n" \
       "  \"author\": \"M.Kimura\",\n" \
       "  \"license\": \"MIT\",\n" \
       "  \"readme\": \"ERROR: No README data found!\"\n" \
       "}" > package.json
   else
+    cd $HOME/${hub}/$1-project/nodejs/$2
     node app.js
   fi
 ##
