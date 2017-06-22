@@ -8,7 +8,15 @@
     object=$3
     forever=$4
   elif [[ $1 = "push" ]]; then
+    if [[ S2 = "$null" ]]; then
+      comment="update"
+    else
+      comment=$2
+    fi
     dex push
+    git add -A
+    git commit -m "${comment}"
+    git push
     exit
   else
     source=$1
