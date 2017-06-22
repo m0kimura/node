@@ -17,11 +17,12 @@
     hub=bitbucket
   fi
 ##
-  while getopts dti OPT; do
+  while getopts dtic OPT; do
     case $OPT in
       "d" ) op=forever ;;
       "t" ) op=test ;;
       "i" ) op=init ;;
+      "c" ) op=compile ;;
     esac
   done
 ##
@@ -56,6 +57,8 @@
       "  \"license\": \"MIT\",\n" \
       "  \"readme\": \"ERROR: No README data found!\"\n" \
       "}" > package.json
+  elif [[ $3 = "-c" ]]; then
+    tsc
   else
     cd $HOME/${hub}/$1-project/nodejs/$2
     node app.js
