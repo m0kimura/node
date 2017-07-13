@@ -1,38 +1,34 @@
 #!/bin/bash
-#
-  project=${PWD##*/}
-##
-  if [[ $1 = "build" ]]; then
-    docker build -t ${project} --build-arg user=$USER .
-    source=$2
-    object=$3
-    forever=$4
-  elif [[ $1 = "push" ]]; then
-    if [[ S2 = "$null" ]]; then
-      comment="update"
-    else
-      comment=$2
-    fi
+cmd=$1
+project=${PWD##*/}
+
+
+##  FX UTILITY
+  if [[ ${cmd} = "push" ]]; then
     dex push
-    git add -A
-    git commit -m "${comment}"
-    git push
     exit
-  else
-    source=$1
-    object=$2
-    forever=$3
+  elif [[ ${cmd} = "stop" ]]; then
+    docker stop fx-${project}
+    exit
+  elif [[ ${cmd} = "login" ]]; then
+    docker exec -it fx-${project} /bin/bash
+    exit
+  elif [[ ${cmd} = "export" ]]; then
+    echo Export Container fx-${project} to local/fx-${project}.tar
+    docker export fx-${project} -o ../local/fx-${project}.tar
+    exit
+  elif [[ ${cmd} = "save" ]]; then
+    echo Save Image ${project} to local/${project}.tar
+    docker save ${project} -o ../local/${project}.tar
+    exit
   fi
-  if [[ ${source} = "$null" ]]; then
-    docker run -it --rm \
-      ${project} /bin/bash
-  else
-    docker run -it --rm \
-      -v $HOME:/home/$USER \
-      -e PRJ=${source} \
-      -e OBJ=${object} \
-      -e D=${forever} \
-      ${project}
-  fi
+##
+##
+  docker rm fx-${project}
+  docker run -it --name fx-${project} \
+    -v $HOME:/home/docker \
+    -e DIR=$DIR \
+    -e MODULE=$MODULE \
+    m0kimura/${project}
 ##
 
